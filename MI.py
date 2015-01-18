@@ -67,6 +67,7 @@ image = ds.ReadAsArray()
 # im = ndimage.rotate(im, 15, mode='constant')
 #im = ndimage.gaussian_filter(im, 4)
 # im += 0.2 * np.random.random(im.shape)
+
 # Compute the Canny filter for two values of sigma
 edges1 = filter.canny(imop,sigma = 5)
 edges2 = filter.canny(imsar,sigma= 5)
@@ -113,4 +114,3 @@ ij=[]
 
 #plt.show()
 # plt.savefig('sar_op_edges5.png',dpi = 500)
-
