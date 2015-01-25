@@ -3,7 +3,7 @@ import matplotlib.pylot as plt
 import gdal
 from skimage import filter
 import numpy as np
-
+# Add the new line
 from numpy.lib.function_base import histogram
 
 def CalMI(a,b):
@@ -42,6 +42,7 @@ def CalMI(a,b):
 
 def CalCC(a,b):
     """
+
     Calculate the CC
     """
     CC = 0.0
@@ -56,28 +57,3 @@ def GetRectBuffer(edge,width):
     width: Buffer's width
     """
     return edge
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
