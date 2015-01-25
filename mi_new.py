@@ -4,7 +4,10 @@ import gdal
 from skimage import filter
 import numpy as np
 # Add the new line
+<<<<<<< HEAD
 # Add the second line
+=======
+>>>>>>> e615ad4fedf68d55d68d1d4022a43dba31307189
 from numpy.lib.function_base import histogram
 
 def CalMI(a,b):
