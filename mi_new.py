@@ -3,10 +3,6 @@ import matplotlib.pylot as plt
 import gdal
 from skimage import filter
 import numpy as np
-# Add the new line
-# Add the second line
-# Add the thired line
-# Add the forth line
 from numpy.lib.function_base import histogram
 
 def CalMI(a,b):
