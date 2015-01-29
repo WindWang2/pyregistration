@@ -41,11 +41,13 @@ def CalMI(a,b):
 
 def CalCC(a,b):
     """
-
     Calculate the CC
+    ---------------------------
+    a: data
+    b: data
     """
-    CC = 0.0
-    return CC
+
+    return np.corrcoef(np.reshape(a,(1,-1)),np.reshape(b,(1,-1)))[0,1]
 
 
 def GetRectBuffer(edge,width):
@@ -128,3 +130,23 @@ def GetBlurData(data,sigma):
     sigma: Gaussian Blur's Sigma(scale)
     """
     return filter.gaussian_filter(data,sigma)
+
+def GetBufferEdge(data,buffer):
+    """
+    Use the Buffer to Get Edge
+    -----------------------------------
+    data: blur image data
+    buffer: edge Buffer data
+    """
+    data[buffer==0]=0
+    return data
+
+def readRefPoints(ptFile):
+    """
+    Read the Points from ptFile
+    ----------------------------------
+    ptFile: Points file. Contain column X and column Y
+    """
+    return np.loadtxt(ptFile)
+
+#def
