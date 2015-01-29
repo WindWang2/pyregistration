@@ -55,4 +55,76 @@ def GetRectBuffer(edge,width):
     edge: the binary edge image
     width: Buffer's width
     """
-    return edge
+    if(width % 2 == 0):
+        print("The Width Must be odd")
+        return 0
+    buf = edge.copy()
+
+    # # XXX: Test
+    # buf = np.ones((10,10))
+    # width = 5
+
+    imgH,imgW = buf.shape
+
+    halfwidth = width/2
+
+    # Expand buf with zeros
+    # DirY bottom
+    imgBufferY= np.zeros((halfwidth,imgW))
+    buf = np.concatenate((buf,imgBufferY))
+    # DirY up
+    buf = np.concatenate((imgBufferY,buf))
+    #DirX Left
+    imgBufferX= np.zeros((imgH+halfwidth*2,halfwidth))
+    buf = np.concatenate((buf,imgBufferX),axis = 1)
+    #DirX Right
+    buf = np.concatenate((imgBufferX,buf),axis = 1)
+
+
+    def __bufferForPoint(x,y):
+        """
+        Get Rect Area for point
+        ----------------------------
+        x,y for (x,y) in image
+        """
+        # i for x, and j for y
+        # FIXME: The speed of loop is slow
+        for i in range(width):
+            for j in range(width):
+                buf[i+x,j+y] = 1
+
+    for i in range(imgW):
+        for j in range(imgH):
+            if(edge[j,i] == 1):
+                __bufferForPoint(i,j)
+
+    return buf[halfwidth:(halfwidth+imgH),halfwidth:(halfwidth+imgW)]
+
+def ReadData(file):
+    """
+    Use GDAL to Read file as Numpy array
+    ------------------------------------
+    file: The file path
+    """
+
+    ds = gdal.Open(file)
+    return ds.ReadAsArray()
+
+def GetEdgeByData(data,s):
+    """
+    Use Skimage's filter canny to get canny edge
+    --------------------------------------------
+    data: Image data
+    sigma: Gaussion Blur' Sigma(Scale)
+    """
+
+    return filter.canny(data,sigma = s)
+
+def GetBlurData(data,sigma):
+    """
+    Use SKimage's Gaussian filter to get Blur image for generate main edge using edges
+    ------------------------------------
+    data: Image Data
+    sigma: Gaussian Blur's Sigma(scale)
+    """
+    return filter.gaussian_filter(data,sigma)
