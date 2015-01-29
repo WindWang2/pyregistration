@@ -47,7 +47,7 @@ def CalCC(a,b):
     b: data
     """
 
-    return np.corrcoef(np.reshape(a,(1,-1)),np.reshape(b,(1,-1)))[0,1]
+    return np.abs(np.corrcoef(np.reshape(a,(1,-1)),np.reshape(b,(1,-1)))[0,1])
 
 
 def GetRectBuffer(edge,width):
@@ -150,12 +150,36 @@ def readRefPoints(ptFile):
     return np.loadtxt(ptFile)
 
 #def
-def FindSamePoint(pts,searchWidth,refImage,desImage):
+def FindSamePoint(pts,searchWidth,ws,refImage,desImage):
     """
     Find the same points as pts in desImage
     -----------------------------------------------
     pts: points in refImage
     searchWidth: Search width by pixels
+    ws: Window Size
     refImage: Reference Image
     desImage: Image for looking points
     """
+    # m for the number of pts
+    m,n=pts.shape
+    desPts=np.zeros(pts.shape)
+
+    for k in range(m):
+        x = pts[k,0]
+        y = pts[k,1]
+        halfSearchWid = searchWidth/2
+        halfWs = ws/2
+        temp=0
+        tempi=0
+        tempj=0
+        for i in range(-halfSearchWid,halfSearchWid+1):
+            for j in range(-halfSearchWid,halfSearchWid+1):
+                re = CalCC(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
+                      desImage[(j+y-halfWs):(j+y+halfWs+1),(i+x-halfWs):(i+x+halfWs+1)])
+                if(re>temp):
+                    temp = re
+                    tempi = i
+                    tempj = j
+        desPts[k,0]=x+tempi
+        desPts[k,1]=x+tempj
+    return desPts
