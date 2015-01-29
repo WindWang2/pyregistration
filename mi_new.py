@@ -150,3 +150,12 @@ def readRefPoints(ptFile):
     return np.loadtxt(ptFile)
 
 #def
+def FindSamePoint(pts,searchWidth,refImage,desImage):
+    """
+    Find the same points as pts in desImage
+    -----------------------------------------------
+    pts: points in refImage
+    searchWidth: Search width by pixels
+    refImage: Reference Image
+    desImage: Image for looking points
+    """
