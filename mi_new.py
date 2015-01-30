@@ -184,59 +184,83 @@ def FindSamePoint(pts,searchWidth,ws,refImage,desImage):
         desPts[k,1]=y+tempj
     return desPts
 
+
+def plotwithpixels(img,pts):
+    """
+    plot the image with pts
+    ----------------------------
+    img: image
+    pts: point([x,y])
+    """
+    plt.imshow(img,plt.cm.gray)
+    plt.plot(pts[:,0],pts[:,1],'r+',markersize = 15)
+
+    h,w = img.shape
+
+    n,temp = pts.shape
+
+    for i in range(n):
+        plt.text(pts[i,0]+15,pts[i,1]-75,str(i+1),fontsize=15,color='red')
+
+    plt.xlim((0,w))
+    plt.ylim((h,0))
+
+    plt.axis('off')
+    plt.show()
+
 if __name__=='__main__':
 
     """
-    Test Function
+    test function
     """
-    # Op_Image
-    opFile = '/Users/kevin/Desktop/work-0130/op.tif'
-    # Sar_Image
-    sarFile = '/Users/kevin/Desktop/work-0130/sar.tif'
+    # op_image
+    opfile = '/users/kevin/desktop/work-0130/op.tif'
+    # sar_image
+    sarfile = '/users/kevin/desktop/work-0130/sar.tif'
 
-    #Point file(Optical)
-    opPts = '/Users/kevin/Desktop/work-0130/op.txt'
+    #point file(optical)
+    oppts = '/users/kevin/desktop/work-0130/op.txt'
 
-    opImg= ReadData(opFile)
-    sarImg = ReadData(sarFile)
+    opimg= readdata(opfile)
+    sarimg = readdata(sarfile)
 
-    pts = readRefPoints(opPts)
+    pts = readrefpoints(oppts)
     #sigma
-    edgeSigma = 5
-    blurSigma = 3
+    edgesigma = 5
+    blursigma = 3
 
     import ipdb; ipdb.set_trace()
-    opEdge = GetEdgeByData(opImg,edgeSigma)
-    sarEdge = GetEdgeByData(sarImg,edgeSigma)
-    plt.imsave('/Users/kevin/Desktop/work-0130/opEdge.tif',opEdge,cmap=plt.cm.gray)
-    plt.imsave('/Users/kevin/Desktop/work-0130/sarEdge.tif',sarEdge,cmap = plt.cm.gray)
+    opedge = getedgebydata(opimg,edgesigma)
+    saredge = getedgebydata(sarimg,edgesigma)
+    plt.imsave('/users/kevin/desktop/work-0130/opedge.tif',opedge,cmap=plt.cm.gray)
+    plt.imsave('/users/kevin/desktop/work-0130/saredge.tif',saredge,cmap = plt.cm.gray)
 
     import ipdb; ipdb.set_trace()
-    opBlur = GetBlurData(opImg,blurSigma)
-    sarBlur = GetBlurData(sarImg,blurSigma)
+    opblur = getblurdata(opimg,blursigma)
+    sarblur = getblurdata(sarimg,blursigma)
 
-    plt.imsave('/Users/kevin/Desktop/work-0130/opBlur.tif',opBlur,cmap=plt.cm.gray)
-    plt.imsave('/Users/kevin/Desktop/work-0130/sarBlur.tif',sarBlur,cmap = plt.cm.gray)
+    plt.imsave('/users/kevin/desktop/work-0130/opblur.tif',opblur,cmap=plt.cm.gray)
+    plt.imsave('/users/kevin/desktop/work-0130/sarblur.tif',sarblur,cmap = plt.cm.gray)
     #width
-    bufWidth = 15
-    opBuf = GetRectBuffer(opEdge, bufWidth)
-    sarBuf = GetRectBuffer(sarEdge,bufWidth)
+    bufwidth = 15
+    opbuf = getrectbuffer(opedge, bufwidth)
+    sarbuf = getrectbuffer(saredge,bufwidth)
 
-    plt.imsave('/Users/kevin/Desktop/work-0130/opBuf.tif',opBuf,cmap=plt.cm.gray)
-    plt.imsave('/Users/kevin/Desktop/work-0130/sarBuf.tif',sarBuf,cmap = plt.cm.gray)
+    plt.imsave('/users/kevin/desktop/work-0130/opbuf.tif',opbuf,cmap=plt.cm.gray)
+    plt.imsave('/users/kevin/desktop/work-0130/sarbuf.tif',sarbuf,cmap = plt.cm.gray)
 
-    opBufEdge = GetBufferEdge(opBlur,opBuf)
-    sarBufEdge = GetBufferEdge(sarBlur,sarBuf)
+    opbufedge = getbufferedge(opblur,opbuf)
+    sarbufedge = getbufferedge(sarblur,sarbuf)
 
     np.array([1],2)
-    # SearchWidth
-    searchWidth = 37
-    # Windows size
+    # searchwidth
+    searchwidth = 37
+    # windows size
     ws =30
-    rePts = FindSamePoint(pts,searchWidth,ws,opBufEdge,sarBufEdge)
+    repts = findsamepoint(pts,searchwidth,ws,opbufedge,sarbufedge)
 
-    plt.imsave('/Users/kevin/Desktop/work-0130/opBufEdge.tif',opBufEdge,cmap=plt.cm.gray)
-    plt.imsave('/Users/kevin/Desktop/work-0130/sarBufEdge.tif',sarBufEdge,cmap = plt.cm.gray)
+    plt.imsave('/users/kevin/desktop/work-0130/opbufedge.tif',opbufedge,cmap=plt.cm.gray)
+    plt.imsave('/users/kevin/desktop/work-0130/sarbufedge.tif',sarbufedge,cmap = plt.cm.gray)
 
-    np.savetxt('/Users/kevin/Desktop/work-0130/test.txt',rePts,fmt = '%.0d')
-    print(rePts)
+    np.savetxt('/users/kevin/desktop/work-0130/test.txt',repts,fmt = '%.0d')
+    print(repts)
