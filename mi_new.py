@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import matplotlib.pylot as plt
+import matplotlib.pyplot as plt
 import gdal
 from skimage import filter
 import numpy as np
@@ -93,7 +93,7 @@ def GetRectBuffer(edge,width):
         # FIXME: The speed of loop is slow
         for i in range(width):
             for j in range(width):
-                buf[i+x,j+y] = 1
+                buf[j+y,i+x] = 1
 
     for i in range(imgW):
         for j in range(imgH):
@@ -181,5 +181,62 @@ def FindSamePoint(pts,searchWidth,ws,refImage,desImage):
                     tempi = i
                     tempj = j
         desPts[k,0]=x+tempi
-        desPts[k,1]=x+tempj
+        desPts[k,1]=y+tempj
     return desPts
+
+if __name__=='__main__':
+
+    """
+    Test Function
+    """
+    # Op_Image
+    opFile = '/Users/kevin/Desktop/work-0130/op.tif'
+    # Sar_Image
+    sarFile = '/Users/kevin/Desktop/work-0130/sar.tif'
+
+    #Point file(Optical)
+    opPts = '/Users/kevin/Desktop/work-0130/op.txt'
+
+    opImg= ReadData(opFile)
+    sarImg = ReadData(sarFile)
+
+    pts = readRefPoints(opPts)
+    #sigma
+    edgeSigma = 5
+    blurSigma = 3
+
+    import ipdb; ipdb.set_trace()
+    opEdge = GetEdgeByData(opImg,edgeSigma)
+    sarEdge = GetEdgeByData(sarImg,edgeSigma)
+    plt.imsave('/Users/kevin/Desktop/work-0130/opEdge.tif',opEdge,cmap=plt.cm.gray)
+    plt.imsave('/Users/kevin/Desktop/work-0130/sarEdge.tif',sarEdge,cmap = plt.cm.gray)
+
+    import ipdb; ipdb.set_trace()
+    opBlur = GetBlurData(opImg,blurSigma)
+    sarBlur = GetBlurData(sarImg,blurSigma)
+
+    plt.imsave('/Users/kevin/Desktop/work-0130/opBlur.tif',opBlur,cmap=plt.cm.gray)
+    plt.imsave('/Users/kevin/Desktop/work-0130/sarBlur.tif',sarBlur,cmap = plt.cm.gray)
+    #width
+    bufWidth = 15
+    opBuf = GetRectBuffer(opEdge, bufWidth)
+    sarBuf = GetRectBuffer(sarEdge,bufWidth)
+
+    plt.imsave('/Users/kevin/Desktop/work-0130/opBuf.tif',opBuf,cmap=plt.cm.gray)
+    plt.imsave('/Users/kevin/Desktop/work-0130/sarBuf.tif',sarBuf,cmap = plt.cm.gray)
+
+    opBufEdge = GetBufferEdge(opBlur,opBuf)
+    sarBufEdge = GetBufferEdge(sarBlur,sarBuf)
+
+    np.array([1],2)
+    # SearchWidth
+    searchWidth = 37
+    # Windows size
+    ws =30
+    rePts = FindSamePoint(pts,searchWidth,ws,opBufEdge,sarBufEdge)
+
+    plt.imsave('/Users/kevin/Desktop/work-0130/opBufEdge.tif',opBufEdge,cmap=plt.cm.gray)
+    plt.imsave('/Users/kevin/Desktop/work-0130/sarBufEdge.tif',sarBufEdge,cmap = plt.cm.gray)
+
+    np.savetxt('/Users/kevin/Desktop/work-0130/test.txt',rePts,fmt = '%.0d')
+    print(rePts)
