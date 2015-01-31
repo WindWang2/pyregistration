@@ -11,7 +11,7 @@ def CalMI(a,b):
     """
     reference = np.array(a)
     query = np.array(b)
-    L=255
+    L=256
     miMat = np.zeros((L,L))
     reference.shape = -1
     query.shape = -1
@@ -20,21 +20,22 @@ def CalMI(a,b):
     for m in miImg:
         miMat[m] = miMat[m]+1
     miMat = np.array(miMat) / np.double(reference.size)
-    refHist,temp = histogram(reference,2,range=(0,2))
-    queHist,temp = histogram(query,2,range=(0,2))
-    refHist = np.refHist / np.double(reference.size)
-    queHist = np.queHist / np.double(query.size)
+    refHist,temp = histogram(reference,256,range=(0,256))
+    queHist,temp = histogram(query,256,range=(0,256))
+    refHist = refHist / np.double(reference.size)
+    queHist = queHist / np.double(query.size)
+
     r=-refHist*np.log2(refHist+0.000000000000000000000000000001)
     q=-queHist*np.log2(queHist+0.000000000000000000000000000001)
     r[refHist==0]=0
     q[queHist==0]=0
-    r = sum(r)
-    q = sum(q)
+    r = np.sum(r)
+    q = np.sum(q)
     refHist.shape = refHist.size,1
     rq = (refHist*queHist)
     MI = miMat*np.log2((miMat)/(rq+0.000000000000000000000001)+0.000000000000000000000001)
     MI[miMat == 0]=0
-    MI=sum(MI)
+    MI=np.sum(MI)
     NMI = 2*MI/(r+q)
     #print(r,q,MI)
     return NMI
@@ -172,9 +173,14 @@ def FindSamePoint(pts,searchWidth,ws,refImage,desImage):
         temp=0
         tempi=0
         tempj=0
+
+        # import ipdb; ipdb.set_trace()
+        print(k)
         for i in range(-halfSearchWid,halfSearchWid+1):
             for j in range(-halfSearchWid,halfSearchWid+1):
-                re = CalCC(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
+                # re = CalCC(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
+                #       desImage[(j+y-halfWs):(j+y+halfWs+1),(i+x-halfWs):(i+x+halfWs+1)])
+                re = CalMI(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
                       desImage[(j+y-halfWs):(j+y+halfWs+1),(i+x-halfWs):(i+x+halfWs+1)])
                 if(re>temp):
                     temp = re
@@ -185,12 +191,14 @@ def FindSamePoint(pts,searchWidth,ws,refImage,desImage):
     return desPts
 
 
-def plotwithpixels(img,pts):
+def plotwithpixels(img,pts,outFile,textcolor):
     """
     plot the image with pts
     ----------------------------
     img: image
     pts: point([x,y])
+    outFile: the path of outImageFile
+    color: TEXT Color
     """
     plt.imshow(img,plt.cm.gray)
     plt.plot(pts[:,0],pts[:,1],'r+',markersize = 15)
@@ -200,16 +208,16 @@ def plotwithpixels(img,pts):
     n,temp = pts.shape
 
     for i in range(n):
-        plt.text(pts[i,0]+15,pts[i,1]-75,str(i+1),fontsize=15,color='red')
+        plt.text(pts[i,0]+15,pts[i,1]-15,str(i+1),fontsize=15,color=textcolor)
 
     plt.xlim((0,w))
     plt.ylim((h,0))
 
     plt.axis('off')
-    plt.show()
+    plt.savefig(outFile,dpi=300)
+    plt.close()
 
 if __name__=='__main__':
-
     """
     test function
     """
@@ -219,48 +227,51 @@ if __name__=='__main__':
     sarfile = '/users/kevin/desktop/work-0130/sar.tif'
 
     #point file(optical)
-    oppts = '/users/kevin/desktop/work-0130/op.txt'
+    oppts = '/users/kevin/desktop/work-0130/op_new.txt'
 
-    opimg= readdata(opfile)
-    sarimg = readdata(sarfile)
+    opimg= ReadData(opfile)
+    sarimg = ReadData(sarfile)
 
-    pts = readrefpoints(oppts)
+    pts = readRefPoints(oppts)
     #sigma
-    edgesigma = 5
-    blursigma = 3
+    edgesigma = 4
+    blursigma = 2
 
-    import ipdb; ipdb.set_trace()
-    opedge = getedgebydata(opimg,edgesigma)
-    saredge = getedgebydata(sarimg,edgesigma)
+    # import ipdb; ipdb.set_trace()
+    opedge = GetEdgeByData(opimg,3)
+    saredge = GetEdgeByData(sarimg,edgesigma)
+
     plt.imsave('/users/kevin/desktop/work-0130/opedge.tif',opedge,cmap=plt.cm.gray)
     plt.imsave('/users/kevin/desktop/work-0130/saredge.tif',saredge,cmap = plt.cm.gray)
 
-    import ipdb; ipdb.set_trace()
-    opblur = getblurdata(opimg,blursigma)
-    sarblur = getblurdata(sarimg,blursigma)
+    # import ipdb; ipdb.set_trace()
+    opblur = GetBlurData(opimg,blursigma)
+    sarblur = GetBlurData(sarimg,blursigma)
 
     plt.imsave('/users/kevin/desktop/work-0130/opblur.tif',opblur,cmap=plt.cm.gray)
     plt.imsave('/users/kevin/desktop/work-0130/sarblur.tif',sarblur,cmap = plt.cm.gray)
     #width
     bufwidth = 15
-    opbuf = getrectbuffer(opedge, bufwidth)
-    sarbuf = getrectbuffer(saredge,bufwidth)
+    opbuf = GetRectBuffer(opedge, bufwidth)
+    sarbuf = GetRectBuffer(saredge,bufwidth)
 
     plt.imsave('/users/kevin/desktop/work-0130/opbuf.tif',opbuf,cmap=plt.cm.gray)
     plt.imsave('/users/kevin/desktop/work-0130/sarbuf.tif',sarbuf,cmap = plt.cm.gray)
 
-    opbufedge = getbufferedge(opblur,opbuf)
-    sarbufedge = getbufferedge(sarblur,sarbuf)
+    opbufedge = GetBufferEdge(opblur,opbuf)
+    sarbufedge = GetBufferEdge(sarblur,sarbuf)
 
-    np.array([1],2)
     # searchwidth
-    searchwidth = 37
+    searchwidth = 50
     # windows size
-    ws =30
-    repts = findsamepoint(pts,searchwidth,ws,opbufedge,sarbufedge)
+    ws = 19
+    repts = FindSamePoint(pts,searchwidth,ws,opbufedge,sarbufedge)
 
     plt.imsave('/users/kevin/desktop/work-0130/opbufedge.tif',opbufedge,cmap=plt.cm.gray)
     plt.imsave('/users/kevin/desktop/work-0130/sarbufedge.tif',sarbufedge,cmap = plt.cm.gray)
+
+    plotwithpixels(opimg,pts,'/users/kevin/desktop/work-0130/opre.tif','yellow')
+    plotwithpixels(sarimg,repts,'/users/kevin/desktop/work-0130/sarre.tif','red')
 
     np.savetxt('/users/kevin/desktop/work-0130/test.txt',repts,fmt = '%.0d')
     print(repts)
