@@ -266,9 +266,9 @@ if __name__=='__main__':
     searchwidth = 50
     # windows size
     ws = 19
-    # repts = FindSamePoint(pts,searchwidth,ws,opbufedge,sarbufedge)
+    repts = FindSamePoint(pts,searchwidth,ws,opbufedge,sarbufedge)
     # XXX: Test in Origin Image
-    repts = FindSamePoint(pts,searchwidth,ws,opimg,sarimg)
+    # repts = FindSamePoint(pts,searchwidth,ws,opimg,sarimg)
 
     plt.imsave(workspace+'opbufedge.tif',opbufedge,cmap=plt.cm.gray)
     plt.imsave(workspace+'sarbufedge.tif',sarbufedge,cmap = plt.cm.gray)
