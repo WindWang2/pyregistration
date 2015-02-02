@@ -4,6 +4,7 @@ import gdal
 from skimage import filter
 import numpy as np
 from numpy.lib.function_base import histogram
+import skimage
 
 def CalMI(a,b):
     """
@@ -178,9 +179,9 @@ def FindSamePoint(pts,searchWidth,ws,refImage,desImage):
         print(k)
         for i in range(-halfSearchWid,halfSearchWid+1):
             for j in range(-halfSearchWid,halfSearchWid+1):
-                # re = CalCC(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
+                # re = CalMI(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
                 #       desImage[(j+y-halfWs):(j+y+halfWs+1),(i+x-halfWs):(i+x+halfWs+1)])
-                re = CalMI(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
+                re = CalCC(refImage[(y-halfWs):(y+halfWs+1),(x-halfWs):(x+halfWs+1)], \
                       desImage[(j+y-halfWs):(j+y+halfWs+1),(i+x-halfWs):(i+x+halfWs+1)])
                 if(re>temp):
                     temp = re
@@ -217,6 +218,12 @@ def plotwithpixels(img,pts,outFile,textcolor):
     plt.savefig(outFile,dpi=300)
     plt.close()
 
+def GetGradient(img):
+    """
+
+    """
+    a,b = np.gradient(np.double(img))
+    return np.sqrt((a**2+b**2)/2)
 if __name__=='__main__':
     """
     test function
@@ -249,6 +256,7 @@ if __name__=='__main__':
     opblur = GetBlurData(opimg,blursigma)
     sarblur = GetBlurData(sarimg,blursigma)
 
+
     plt.imsave(workspace+'opblur.tif',opblur,cmap=plt.cm.gray)
     plt.imsave(workspace+'sarblur.tif',sarblur,cmap = plt.cm.gray)
     #width
@@ -259,14 +267,18 @@ if __name__=='__main__':
     plt.imsave(workspace+'opbuf.tif',opbuf,cmap=plt.cm.gray)
     plt.imsave(workspace+'sarbuf.tif',sarbuf,cmap = plt.cm.gray)
 
-    opbufedge = GetBufferEdge(opblur,opbuf)
-    sarbufedge = GetBufferEdge(sarblur,sarbuf)
+    # opbufedge = GetBufferEdge(opblur,opbuf)
+    # sarbufedge = GetBufferEdge(sarblur,sarbuf)
+    opbufedge = GetBufferEdge(GetGradient(opblur),opbuf)
+    sarbufedge = GetBufferEdge(GetGradient(sarblur),sarbuf)
 
     # searchwidth
     searchwidth = 50
     # windows size
-    ws = 19
-    repts = FindSamePoint(pts,searchwidth,ws,opbufedge,sarbufedge)
+    ws = 49
+    # repts = FindSamePoint(pts,searchwidth,ws,GetGradient(opimg),GetGradient(sarimg))
+    # repts = FindSamePoint(pts,searchwidth,ws,opbufedge,sarbufedge)
+    repts = FindSamePoint(pts,searchwidth,ws,GetGradient(opblur),GetGradient(sarblur))
     # XXX: Test in Origin Image
     # repts = FindSamePoint(pts,searchwidth,ws,opimg,sarimg)
 
