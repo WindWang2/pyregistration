@@ -221,13 +221,14 @@ if __name__=='__main__':
     """
     test function
     """
+    workspace = '/Users/kevin/Desktop/work-2-2/'
     # op_image
-    opfile = '/users/kevin/desktop/work-0130/op.tif'
+    opfile = workspace+'op.tif'
     # sar_image
-    sarfile = '/users/kevin/desktop/work-0130/sar.tif'
+    sarfile = workspace+'sar.tif'
 
     #point file(optical)
-    oppts = '/users/kevin/desktop/work-0130/op_new.txt'
+    oppts = workspace+'oppts.txt'
 
     opimg= ReadData(opfile)
     sarimg = ReadData(sarfile)
@@ -241,22 +242,22 @@ if __name__=='__main__':
     opedge = GetEdgeByData(opimg,3)
     saredge = GetEdgeByData(sarimg,edgesigma)
 
-    plt.imsave('/users/kevin/desktop/work-0130/opedge.tif',opedge,cmap=plt.cm.gray)
-    plt.imsave('/users/kevin/desktop/work-0130/saredge.tif',saredge,cmap = plt.cm.gray)
+    plt.imsave(workspace+'opedge.tif',opedge,cmap=plt.cm.gray)
+    plt.imsave(workspace+'saredge.tif',saredge,cmap = plt.cm.gray)
 
     # import ipdb; ipdb.set_trace()
     opblur = GetBlurData(opimg,blursigma)
     sarblur = GetBlurData(sarimg,blursigma)
 
-    plt.imsave('/users/kevin/desktop/work-0130/opblur.tif',opblur,cmap=plt.cm.gray)
-    plt.imsave('/users/kevin/desktop/work-0130/sarblur.tif',sarblur,cmap = plt.cm.gray)
+    plt.imsave(workspace+'opblur.tif',opblur,cmap=plt.cm.gray)
+    plt.imsave(workspace+'sarblur.tif',sarblur,cmap = plt.cm.gray)
     #width
     bufwidth = 15
     opbuf = GetRectBuffer(opedge, bufwidth)
     sarbuf = GetRectBuffer(saredge,bufwidth)
 
-    plt.imsave('/users/kevin/desktop/work-0130/opbuf.tif',opbuf,cmap=plt.cm.gray)
-    plt.imsave('/users/kevin/desktop/work-0130/sarbuf.tif',sarbuf,cmap = plt.cm.gray)
+    plt.imsave(workspace+'opbuf.tif',opbuf,cmap=plt.cm.gray)
+    plt.imsave(workspace+'sarbuf.tif',sarbuf,cmap = plt.cm.gray)
 
     opbufedge = GetBufferEdge(opblur,opbuf)
     sarbufedge = GetBufferEdge(sarblur,sarbuf)
@@ -265,13 +266,15 @@ if __name__=='__main__':
     searchwidth = 50
     # windows size
     ws = 19
-    repts = FindSamePoint(pts,searchwidth,ws,opbufedge,sarbufedge)
+    # repts = FindSamePoint(pts,searchwidth,ws,opbufedge,sarbufedge)
+    # XXX: Test in Origin Image
+    repts = FindSamePoint(pts,searchwidth,ws,opimg,sarimg)
 
-    plt.imsave('/users/kevin/desktop/work-0130/opbufedge.tif',opbufedge,cmap=plt.cm.gray)
-    plt.imsave('/users/kevin/desktop/work-0130/sarbufedge.tif',sarbufedge,cmap = plt.cm.gray)
+    plt.imsave(workspace+'opbufedge.tif',opbufedge,cmap=plt.cm.gray)
+    plt.imsave(workspace+'sarbufedge.tif',sarbufedge,cmap = plt.cm.gray)
 
-    plotwithpixels(opimg,pts,'/users/kevin/desktop/work-0130/opre.tif','yellow')
-    plotwithpixels(sarimg,repts,'/users/kevin/desktop/work-0130/sarre.tif','red')
+    plotwithpixels(opimg,pts,workspace+'opre.tif','yellow')
+    plotwithpixels(sarimg,repts,workspace+'sarre.tif','red')
 
-    np.savetxt('/users/kevin/desktop/work-0130/test.txt',repts,fmt = '%.0d')
+    np.savetxt(workspace+'test.txt',repts,fmt = '%.0d')
     print(repts)
