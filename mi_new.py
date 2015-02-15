@@ -48,7 +48,6 @@ def CalCC(a,b):
     a: data
     b: data
     """
-
     return np.abs(np.corrcoef(np.reshape(a,(1,-1)),np.reshape(b,(1,-1)))[0,1])
 
 
