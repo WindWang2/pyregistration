@@ -223,6 +223,7 @@ def GetGradient(img):
     """
     a,b = np.gradient(np.double(img))
     return np.sqrt((a**2+b**2)/2)
+
 if __name__=='__main__':
     """
     test function
